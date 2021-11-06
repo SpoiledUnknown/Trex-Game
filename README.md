@@ -1,4 +1,4 @@
-## TREX-2.0
+## TREX-Game v2.0
 _________________
 
 ## Stable Release
