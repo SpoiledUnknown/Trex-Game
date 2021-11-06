@@ -1,1 +1,1 @@
-# TREX-GAME
+# TREX-2.0

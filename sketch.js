@@ -22,7 +22,7 @@ function preload()
 trex_running=loadAnimation("trex1.png","trex3.png","trex4.png");
   
 //set animation to trex collided
-trex_collided=loadAnimation("trex_collided.png");
+trex_collided=loadImage("trex_collided.png");
 
 //set image to ground 
 img=loadImage("ground2.png");
@@ -63,7 +63,7 @@ function setup()
   //create ground,add image and scale 
   ground=createSprite(200,180,400,20);
   ground.addImage("ground",img);
-  ground.velocityX=-3;
+  
   
   //create invisible ground 
   invisibleground=createSprite(200,190,400,10);
@@ -84,7 +84,7 @@ function setup()
   resetbuttun.addImage("sft",resetbuttunimg);
   resetbuttun.scale=0.5;
   resetbuttun.visible=false;
-  trex.debug=true;
+  //trex.debug=true;
   
   trex.setCollider("circle",0,0,20);
 }
@@ -95,12 +95,15 @@ function draw ()
   //clear background 
   background(180);
   
+   text("score:" + count,500,50);
+  
  if(gameState===play)
  {
    
    count =count+Math.round(getFrameRate()/60);
    
-  
+   
+   ground.velocityX = -(6 + 3*count/100);
   //reset the ground
   if(ground.x<0)
   {
@@ -108,12 +111,16 @@ function draw ()
   }
   
   //make trex jump when space is pressed
-  if(keyDown("space") && trex.y>=360)
+  if(keyDown("SPACE") )
   {
-    trex.velocityY = -12;  
+    trex.velocityY = -12; 
+    
+
   }
-  
-  text("score:" + count,500,50);
+   //make gravity
+  trex.velocityY = trex.velocityY+0.8 ;
+   
+ 
   
   spawnObstacles();
   
@@ -131,10 +138,21 @@ function draw ()
     resetbuttun.visible=true;
     obstaclegroup.setVelocityXEach(0);
     cloudsgroup.setVelocityXEach(0);
-    trex.changeAnimation("collided",trex_collided);
+     //set lifetime of the game objects so that they are never destroyed
+      obstaclegroup.setLifetimeEach(-1);
+      cloudsgroup.setLifetimeEach(-1);
+    trex.changeImage("trex_collided",trex_collided);
     trex.velocityX=0;
+    trex.velocityY=0;   
   }
   
+   if(mousePressedOver(resetbuttun)|| keyDown("space") && gameState===end)
+        {
+          gameover.visible=false;
+    resetbuttun.visible=false;
+          reset();
+          gameState=play;
+        }
 trex.collide(obstaclegroup);
 
   
@@ -144,15 +162,16 @@ trex.collide(obstaclegroup);
   //make trex collide invisible ground 
   trex.collide(invisibleground);
   
-  //make gravity
-  trex.velocityY = trex.velocityY+0.8;
+
 }
+
 
 function spawnObstacles() {
   if(frameCount % 60 === 0) 
   {
     var obstacle = createSprite(600,165,10,40);
-    obstacle.velocityX = -6
+    
+    obstacle.velocityX = -(6 + 3*count/100); 
     
     //generate random obstacles
     var rand = Math.round(random(1,6));
@@ -226,7 +245,7 @@ function spawnClouds()
 {
     count=0;
     
-    trex.setAnimation("trex");
-    ObstaclesGroup.destroyEach();
-    CloudsGroup.destroyEach();
+    trex.addAnimation("trex_running",trex_running);
+    obstaclegroup.destroyEach();
+    cloudsgroup.destroyEach();
 }
